@@ -85,6 +85,7 @@
   programs = {
     home-manager.enable = true;
     direnv.enable = true;
+    zsh.enable = true;
     git = {
       enable = true;
       # Linux環境でデフォルトにしてよさそうな設定を書いている
