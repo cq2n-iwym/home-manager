@@ -5,7 +5,7 @@ let
 
   dotfilesSymlinks =
     { rootDir ? "files"
-    , clonedPath ? "${config.home.homeDirectory}/nix-config"
+    , clonedPath ? "${config.home.homeDirectory}/.config/home-manager"
     }:
     let
       # /nix/store/.../files 以下を traverse して相対パスを取得する。
@@ -41,82 +41,6 @@ let
         pkgs.lib.concatMapAttrs (name: type: funcInner name type) items;
     in
     dotfilesSymlinks' "";
-
-  xmonad = pkgs.symlinkJoin {
-    name = "xmonad-x86_64-linux";
-    paths = [ pkgs.my-xmonad ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/xmonad-x86_64-linux \
-        --set BROWSER  ${env.user.browser} \
-        --set TERMINAL ${env.user.terminal}
-    '';
-  };
-
-  checkstyle = pkgs.writeScriptBin "checkstyle" ''
-    #!${pkgs.stdenv.shell}
-    set -eu
-    JAVA=$JAVA_HOME/bin/java
-    CHECKSTYLE=${pkgs.checkstyle}/checkstyle/checkstyle-all.jar
-
-    ARGS=()
-
-    # コンフィグファイル
-    if [ -n "''${CHECKSTYLE_CONFIG_FILE:-}" ]; then
-        ARGS+=("-c" "''${CHECKSTYLE_CONFIG_FILE}")
-    else
-        echo "CHECKSTYLE_CONFIG_FILE is not set" >&2
-        exit 1
-    fi
-
-    # プロパティファイル
-    PROPERTIES=$(mktemp)
-    cat <<EOF >"$PROPERTIES"
-    suppressions_xml = ''${CHECKSTYLE_SUPPRESSIONS_XML:-/dummy}
-    config_loc       = ''${CHECKSTYLE_CONFIG_LOC:-/dummy}
-    EOF
-    ARGS+=("-p" "$PROPERTIES")
-
-    # コマンドライン引数。null-ls.nvimが余計な引数を渡してくるため、`--`まで読み飛ばす
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            --)
-                shift
-                break
-                ;;
-            *) ;;
-        esac
-        shift
-    done
-    ARGS+=("$@")
-
-    "$JAVA" -jar $CHECKSTYLE "''${ARGS[@]}"
-  '';
-
-  nixDaemonS3CredentialsBin =
-    pkgs.writeShellScriptBin "nix-daemon-s3-credentials" ''
-      set -euo pipefail
-      ACTION=''${1:-enable}
-      AWS_SOURCE=~/.aws
-      AWS_TARGET=/var/secrets/.aws
-
-      if [ "$ACTION" = "enable" ]; then
-        sudo mkdir -p "$AWS_TARGET"
-        sudo ${pkgs.bindfs}/bin/bindfs -o ro \
-          -g nixbld \
-          -p g+rD \
-          "$AWS_SOURCE" "$AWS_TARGET"
-        sudo systemctl set-environment AWS_PROFILE="''${AWS_PROFILE:-default}"
-        sudo systemctl set-environment AWS_SHARED_CREDENTIALS_FILE="$AWS_TARGET/credentials"
-        sudo systemctl restart nix-daemon
-        echo "Enabled nix-daemon S3 credentials..."
-      else
-        sudo umount "$AWS_TARGET"
-        sudo systemctl unset-environment AWS_PROFILE AWS_SHARED_CREDENTIALS_FILE
-        sudo systemctl restart nix-daemon
-        echo "Disabled nix-daemon S3 credentials..."
-      fi
-    '';
 in
 {
   nixpkgs.config = {
@@ -150,6 +74,7 @@ in
       gh
       gitflow
       git-remote-codecommit
+      gnumake
       go
       golangci-lint
       google-cloud-sdk
@@ -192,32 +117,16 @@ in
       tldr
       ulauncher
       unar
+      unzip
       vifm
       watson
       wget
       yq
       zip
-      # for firefox
-      tridactyl-native
-      ### font
-      rounded-mgenplus
-      illusion
-      Cica
       ### my packages
-      my-xmobar
-      my-fzf
       my-fzf-wrapper
-      ### unstable
-      unstable.dasel
-      unstable.alacritty
-      nixDaemonS3CredentialsBin
     ];
     file = dotfilesSymlinks { } // {
-      ".xmonad/xmonad-x86_64-linux".source = "${xmonad}/bin/xmonad-x86_64-linux";
-      ".xmonad/build" = {
-        executable = true;
-        text = ''echo "Nothing to do"'';
-      };
     };
     sessionVariables = {
       EDITOR = "nvimw";
@@ -564,16 +473,6 @@ in
         };
       };
     };
-    vscode = {
-      enable = true;
-      package = (pkgs.vscode.override { isInsiders = true; }).overrideAttrs (oldAttrs: {
-        src = (builtins.fetchTarball {
-          url = "https://update.code.visualstudio.com/latest/linux-x64/insider";
-          sha256 = "sha256:0nb7iavknf4rpdc7fi54x0hnhp4acgfb4yrf0xl4h5h599y651q3";
-        });
-        version = "latest";
-      });
-    };
     navi = {
       enable = true;
     };
@@ -584,7 +483,6 @@ in
       enable = true;
     };
   };
-  services.dropbox.enable = true;
   manual.manpages.enable = false;
 }
 # vim:foldmethod=indent:

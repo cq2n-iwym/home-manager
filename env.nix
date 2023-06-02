@@ -3,37 +3,25 @@
   # * nixos
   # * nixos-virtualbox
   # * nix-package-manager
-  type = "nixos";
-
-  # required only if type="nixos"
-  hostName = "nixos";
-
-  interface = "enp0s31f6";
+  type = "nix-package-manager";
 
   # required
   user =
     {
-      name = "hogeyama";
+      name = "cq2n-iwym";
       hashedPassword = "$6$0VTZ2.H/6uC/TqaV$jon2WkKJZSmKJJyHgi6QlZWkr7dQ1F0rRlXVno48hxkco5ofY.FzeNnj6qBcDBjDjaK0qbxRz2sjR8OEF2mis/";
       home = {
-        username = "hogeyama";
-        homeDirectory = "/home/hogeyama";
+        username = "cq2n-iwym";
+        homeDirectory = "/home/cq2n-iwym";
       };
       git = {
-        userName = "Hogeyama";
-        userEmail = "gan13027830@gmail.com";
+        userName = "cq2n-iwym";
+        userEmail = "naoki.iwayama@asahi-net.com";
       };
       browser = "firefox";
       terminal = "konsole";
     };
 
   extraConfig = { ... }: {
-    # example
-    programs.steam.enable = true;
-    sops.secrets."aws/hogeyama" = {
-      sopsFile = ./secrets/common.yaml;
-      mode = "0440";
-      path = "/root/.aws/credentials";
-    };
   };
 }
