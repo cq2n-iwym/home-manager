@@ -86,29 +86,29 @@
     home-manager.enable = true;
     direnv.enable = true;
     zsh.enable = true;
-    git = {
-      enable = true;
-      # Linux環境でデフォルトにしてよさそうな設定を書いている
-      extraConfig = {
-        init.defaultBranch = "main";
-        core.autoCRLF = false;
-        core.autoLF = false;
-        core.quotePath = false;
-        fetch.prune = true;
-        blame.date = "short";
-        merge.ff = false;
-        merge.conflictstyle = "diff3";
-        pull.rebase = true;
-        push.autoSetupRemote = true;
-        push.default = "current";
-        rebase.autoStash = true;
-        rebase.missingCommitsCheck = "warn";
-        rerere.enabled = true;
-        credential."https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
-        # 環境ごとの設定は ~/.config/git/config.local から読む
-        include.path = "config.local";
-      };
-    };
+    # git = {
+    #   enable = true;
+    #   # Linux環境でデフォルトにしてよさそうな設定を書いている
+    #   extraConfig = {
+    #     init.defaultBranch = "main";
+    #     core.autoCRLF = false;
+    #     core.autoLF = false;
+    #     core.quotePath = false;
+    #     fetch.prune = true;
+    #     blame.date = "short";
+    #     merge.ff = false;
+    #     merge.conflictstyle = "diff3";
+    #     pull.rebase = true;
+    #     push.autoSetupRemote = true;
+    #     push.default = "current";
+    #     rebase.autoStash = true;
+    #     rebase.missingCommitsCheck = "warn";
+    #     rerere.enabled = true;
+    #     credential."https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+    #     # 環境ごとの設定は ~/.config/git/config.local から読む
+    #     include.path = "config.local";
+    #   };
+    # };
     nix-index.enable = true;
   };
   manual.manpages.enable = false;
