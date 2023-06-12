@@ -21,6 +21,7 @@
       docker
       docker-compose
       docker-credential-helpers
+      emacs
       exa
       fd
       feh
@@ -44,6 +45,7 @@
       lsof
       manix
       mercurial
+      neovim
       neovim-remote
       nil
       nixpkgs-fmt
@@ -75,6 +77,7 @@
       ulauncher
       unar
       unzip
+      vim
       vifm
       watson
       wget
